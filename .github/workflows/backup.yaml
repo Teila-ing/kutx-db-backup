@@ -28,6 +28,9 @@ jobs:
             exit 0
           fi
 
+      - name: Set timestamp
+        run: echo "BACKUP_TIMESTAMP=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_ENV
+
       - name: Checkout repository
         if: env.BACKUP_ENABLED == 'true'
         uses: actions/checkout@v3
@@ -40,19 +43,19 @@ jobs:
 
       - name: Create timestamp folder
         if: env.BACKUP_ENABLED == 'true'
-        run: mkdir -p backups
+        run: mkdir -p backups/${{ env.BACKUP_TIMESTAMP }}
 
       - name: Backup roles
         if: env.BACKUP_ENABLED == 'true'
-        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/roles.sql --role-only
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.BACKUP_TIMESTAMP }}/roles.sql --role-only
 
       - name: Backup schema
         if: env.BACKUP_ENABLED == 'true'
-        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/schema.sql
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.BACKUP_TIMESTAMP }}/schema.sql
 
       - name: Backup data
         if: env.BACKUP_ENABLED == 'true'
-        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/data.sql --data-only --use-copy
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.BACKUP_TIMESTAMP }}/data.sql --data-only --use-copy
 
       - name: Commit backups
         if: env.BACKUP_ENABLED == 'true'
