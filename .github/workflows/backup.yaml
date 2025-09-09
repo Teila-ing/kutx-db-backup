@@ -43,7 +43,9 @@ jobs:
 
       - name: Create timestamp folder
         if: env.BACKUP_ENABLED == 'true'
-        run: mkdir -p backups/${{ env.BACKUP_TIMESTAMP }}
+        run: |
+          mkdir -p testFolder/
+          mkdir -p backups/${{ env.BACKUP_TIMESTAMP }}
 
       - name: Backup roles
         if: env.BACKUP_ENABLED == 'true'
