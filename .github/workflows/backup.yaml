@@ -63,6 +63,7 @@ jobs:
           backup_dir="backups"
           retention_days=7
           now=$(date +%s)
+          shopt -s nullglob
 
           for dir in "$backup_dir"/*; do
             if [ ! -d "$dir" ]; then
@@ -70,10 +71,14 @@ jobs:
             fi
 
             base=$(basename "$dir")
-            ts="${base//_/ }"
-            ts="${ts//-/ :}"
-            echo "Parsing folder name $base to timestamp: $ts"
-            folder_date=$(date -d "$ts" +%s 2>/dev/null || true)
+            ts="${base/_/ }"
+            date_part="${ts%% *}"
+            time_part="${ts#* }"
+            time_part="${time_part//-/:}"
+
+            full_ts="$date_part $time_part"
+            echo "Parsing folder name $base to timestamp: $full_ts"
+            folder_date=$(date -d "$full_ts" +%s 2>/dev/null || true)
 
             if [ -z "$folder_date" ]; then
               echo "Warning: could not parse date for folder $dir"
@@ -89,6 +94,8 @@ jobs:
               echo "Keeping folder $dir"
             fi
           done
+
+          shopt -u nullglob
 
       - name: Commit backups
         if: env.BACKUP_ENABLED == 'true'
