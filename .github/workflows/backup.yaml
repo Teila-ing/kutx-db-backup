@@ -99,8 +99,6 @@ jobs:
         with:
           commit_message: Supabase backup
 
-  restore_staging_db:
-    needs: run_db_backup
-    uses: ./.github/workflows/restore_staging_db.yaml
-    secrets:
-      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}  # just for testing, should be chnaged by staging url then!!!
+  #restore_staging_db:
+  #  needs: run_db_backup
+  #  uses: ./.github/workflows/restore_staging_db.yaml
