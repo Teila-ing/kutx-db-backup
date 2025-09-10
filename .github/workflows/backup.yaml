@@ -65,6 +65,33 @@ jobs:
           echo "remaining folders"
           ls -l backups/
 
+      - name: Cleanup old backups based on folder name timestamp
+        run: |
+          backup_dir="backups"
+          retention_days=7
+          now=$(date +%s)
+
+          for dir in "$backup_dir"/*; do
+            base=$(basename "$dir")
+            ts="${base//_/ }"
+            ts="${ts//-/ :}"
+            folder_date=$(date -d "$ts" +%s 2>/dev/null)
+
+            if [ -z "$folder_date" ]; then
+              echo "Warning: could not parse date for folder $dir"
+              continue
+            fi
+
+            diff_days=$(( (now - folder_date) / 86400 ))
+
+            if (( diff_days > retention_days )); then
+              echo "Deleting folder $dir (older than $retention_days days)"
+              rm -rf "$dir"
+            else
+              echo "Keeping folder $dir"
+            fi
+          done
+
       - name: Commit backups
         if: env.BACKUP_ENABLED == 'true'
         uses: stefanzweifel/git-auto-commit-action@v4
