@@ -58,12 +58,19 @@ jobs:
         if: env.BACKUP_ENABLED == 'true'
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.TIMESTAMP }}/data.sql --data-only --use-copy
 
-      - name: Find and oldest backup directory
-        id: find_delete_oldest
+
+      - name: Delete oldest backup if 4 or more exist
         run: |
-          oldest=$(ls -1 backups/ | sort | head -1)
-          rm -rf "backups/$oldest"
-          echo "Deleted folder backups/$oldest"
+          backup_dir="backups"
+          count=$(find "$backup_dir" -mindepth 1 -maxdepth 1 -type d | wc -l)
+
+          if [ "$count" -ge 4 ]; then
+            oldest=$(ls -1 "$backup_dir" | sort | head -1)
+            echo "Deleting oldest backup folder: $backup_dir/$oldest"
+            rm -rf "$backup_dir/$oldest"
+          else
+            echo "Only $count backups exist, not deleting any."
+          fi
 
       - name: Commit backups
         if: env.BACKUP_ENABLED == 'true'
