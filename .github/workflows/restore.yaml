@@ -1,0 +1,38 @@
+name: supabase-restore
+
+on:
+  workflow_dispatch: # manuel trigger from github interface
+
+env:
+  SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+
+jobs:
+  restore_db:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Find latest backup directory
+        id: find_latest
+        run: |
+          latest_folder=$(ls -1 backups/ | sort -r | head -n 1)
+          echo "LATEST_BACKUP=$latest_folder" >> $GITHUB_ENV
+          echo "Latest backup folder is $latest_folder"
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Restore roles
+        run: supabase db restore --db-url "$SUPABASE_DB_URL" -f "backups/${{ env.LATEST_BACKUP }}/roles.sql" || true
+
+      - name: Restore schema
+        run: supabase db restore --db-url "$SUPABASE_DB_URL" -f "backups/${{ env.LATEST_BACKUP }}/schema.sql"
+
+      - name: Restore data
+        run: supabase db restore --db-url "$SUPABASE_DB_URL" -f "backups/${{ env.LATEST_BACKUP }}/data.sql" || true
