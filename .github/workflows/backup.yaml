@@ -38,6 +38,9 @@ jobs:
         with:
           version: latest
 
+      - name: tmp test
+        run: mkdir -p "TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')"
+
       - name: Create timestamp folder
         if: env.BACKUP_ENABLED == 'true'
         run: |
