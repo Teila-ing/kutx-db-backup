@@ -22,9 +22,6 @@ jobs:
       BACKUP_ENABLED: ${{ vars.BACKUP_ENABLED }} # Repository variable (true or false)
     
     steps:
-      - name: Set TIMESTAMP variable
-        run: echo "TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
-
       - name: Check if backups are enabled
         run: |
           if [ "$BACKUP_ENABLED" != "true" ]; then
@@ -44,10 +41,9 @@ jobs:
 
       - name: Create timestamp folder
         if: env.BACKUP_ENABLED == 'true'
-        run: mkdir -p "backups/$TIMESTAMP"
-
-      - name: Debug listing backups
-        run: ls -la backups/${{ env.TIMESTAMP }}
+        run: |
+          echo "TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
+          mkdir -p "backups/$TIMESTAMP"
 
       - name: Backup roles
         if: env.BACKUP_ENABLED == 'true'
@@ -60,9 +56,6 @@ jobs:
       - name: Backup data
         if: env.BACKUP_ENABLED == 'true'
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.TIMESTAMP }}/data.sql --data-only --use-copy
-
-      - name: Debug listing backups again
-        run: ls -la backups/${{ env.TIMESTAMP }}
 
       - name: Commit backups
         if: env.BACKUP_ENABLED == 'true'
