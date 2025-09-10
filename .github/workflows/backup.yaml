@@ -40,19 +40,21 @@ jobs:
 
       - name: Create timestamp folder
         if: env.BACKUP_ENABLED == 'true'
-        run: mkdir -p backups222
+        run: |
+          TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')
+          mkdir -p "backups/$TIMESTAMP"
 
       - name: Backup roles
         if: env.BACKUP_ENABLED == 'true'
-        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups222/roles.sql --role-only
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backupss/$TIMESTAMP/roles.sql --role-only
 
       - name: Backup schema
         if: env.BACKUP_ENABLED == 'true'
-        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups222/schema.sql
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backupss/$TIMESTAMP/schema.sql
 
       - name: Backup data
         if: env.BACKUP_ENABLED == 'true'
-        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups222/data.sql --data-only --use-copy
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backupss/$TIMESTAMP/data.sql --data-only --use-copy
 
       - name: Commit backups
         if: env.BACKUP_ENABLED == 'true'
