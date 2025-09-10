@@ -100,5 +100,9 @@ jobs:
           commit_message: Supabase backup
 
   call_restore_job:
-  needs: run_db_backup
-  uses: ./.github/workflows/restore.yaml
+    needs: run_db_backup
+    uses: ./.github/workflows/restore.yaml
+
+  call_clenup_job:
+    needs: run_db_backup
+    uses: ./.github/workflows/backup_cleaning.yaml
