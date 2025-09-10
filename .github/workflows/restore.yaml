@@ -28,6 +28,11 @@ jobs:
         with:
           version: latest
 
+      - name: Clear db before restauration
+        run: |
+          psql "$SUPABASE_DB_URL" -c "DROP SCHEMA public CASCADE;"
+          psql "$SUPABASE_DB_URL" -c "CREATE SCHEMA public;"
+
       - name: Restore roles
         run: psql -d "$SUPABASE_DB_URL" -f "backups/${{ env.LATEST_BACKUP }}/roles.sql" || true
 
