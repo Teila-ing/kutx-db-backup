@@ -2,6 +2,9 @@ name: supabase-restore
 
 on:
   workflow_call:
+    secrets:
+    SUPABASE_DB_URL:
+      required: true
   workflow_dispatch: # manuel trigger from github interface
 
 env:
