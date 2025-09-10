@@ -98,3 +98,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Supabase backup
+
+  restore-staging_db:
+    needs: run_db_backup
+    uses: ./.github/workflows/test/restore_staging_db.yaml

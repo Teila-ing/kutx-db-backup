@@ -1,6 +1,7 @@
 name: supabase-restore
 
 on:
+  workflow_call:
   workflow_dispatch: # manuel trigger from github interface
 
 env:
