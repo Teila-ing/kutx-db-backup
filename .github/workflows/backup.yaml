@@ -1,6 +1,10 @@
 name: supabase-backup
 
 on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * *" # Runs every day at midnight
@@ -98,11 +102,3 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Supabase backup
-
-  call_restore_job:
-    needs: run_db_backup
-    uses: ./.github/workflows/restore.yaml
-
-  call_clenup_job:
-    needs: run_db_backup
-    uses: ./.github/workflows/backup_cleaning.yaml
