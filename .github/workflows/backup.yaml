@@ -61,12 +61,9 @@ jobs:
       - name: Remove old backups
         run: |
           echo "remove old backup folders"
-          find backups/ -maxdepth 1 -type d -mmin +60 -print -exec rm -rf {} +
+          find backups/ -type d -mmin +60 -print -exec rm -rf {} +
           echo "remaining folders"
-          ls -lah backups/
-
-      - name: tmp log
-        run: find backups/ -maxdepth 1 -type d -mmin +60 -exec rm -rf {} +
+          ls -l --time=modify backups/
 
       - name: Commit backups
         if: env.BACKUP_ENABLED == 'true'
