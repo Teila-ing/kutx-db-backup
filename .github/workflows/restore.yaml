@@ -29,10 +29,10 @@ jobs:
           version: latest
 
       - name: Restore roles
-        run: supabase db restore --db-url "$SUPABASE_DB_URL" -f "backups/${{ env.LATEST_BACKUP }}/roles.sql" || true
+        run: psql -d "$SUPABASE_DB_URL" -f "backups/${{ env.LATEST_BACKUP }}/roles.sql" || true
 
       - name: Restore schema
-        run: supabase db restore --db-url "$SUPABASE_DB_URL" -f "backups/${{ env.LATEST_BACKUP }}/schema.sql"
+        run: psql -d "$SUPABASE_DB_URL" -f "backups/${{ env.LATEST_BACKUP }}/schema.sql"
 
       - name: Restore data
-        run: supabase db restore --db-url "$SUPABASE_DB_URL" -f "backups/${{ env.LATEST_BACKUP }}/data.sql" || true
+        run: psql -d "$SUPABASE_DB_URL" -f "backups/${{ env.LATEST_BACKUP }}/data.sql" || true
