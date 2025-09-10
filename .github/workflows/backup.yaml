@@ -59,6 +59,13 @@ jobs:
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.TIMESTAMP }}/data.sql --data-only --use-copy
 
       - name: Remove old backups
+        run: |
+          echo "remove old backup folders"
+          find backups/ -maxdepth 1 -type d -mmin +60 -print -exec rm -rf {} +
+          echo "remaining folders"
+          ls -lah backups/
+
+      - name: tmp log
         run: find backups/ -maxdepth 1 -type d -mmin +60 -exec rm -rf {} +
 
       - name: Commit backups
