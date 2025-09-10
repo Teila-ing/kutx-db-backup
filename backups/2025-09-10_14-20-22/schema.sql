@@ -1,5 +1,5 @@
 
-\restrict 4hWU30hpkcoKULtwGucnPjq4AcY4rhu3KOeI30e0gtVElITOcWPaFz7ZFsv04kC
+\restrict JanNRIagHZaK2GJE3cOlHA8R4u4fo4IzBIuWKFOVltNgWt7xwlJMlb78bf9sD9h
 
 
 SET statement_timeout = 0;
@@ -18,6 +18,11 @@ CREATE SCHEMA IF NOT EXISTS "kutx";
 
 
 ALTER SCHEMA "kutx" OWNER TO "postgres";
+
+
+
+
+ALTER SCHEMA "public" OWNER TO "postgres";
 
 
 COMMENT ON SCHEMA "public" IS 'standard public schema';
@@ -1182,7 +1187,7 @@ ALTER TABLE "public"."utilisateurs_informations_site" ENABLE ROW LEVEL SECURITY;
 ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
 
 
-GRANT USAGE ON SCHEMA "public" TO "postgres";
+REVOKE USAGE ON SCHEMA "public" FROM PUBLIC;
 GRANT USAGE ON SCHEMA "public" TO "anon";
 GRANT USAGE ON SCHEMA "public" TO "authenticated";
 GRANT USAGE ON SCHEMA "public" TO "service_role";
@@ -1493,16 +1498,10 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQ
 
 
 
-
-
-
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "postgres";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "anon";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "authenticated";
 ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "service_role";
-
-
-
 
 
 
@@ -1537,9 +1536,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 
 
 
-
-
-
-\unrestrict 4hWU30hpkcoKULtwGucnPjq4AcY4rhu3KOeI30e0gtVElITOcWPaFz7ZFsv04kC
+\unrestrict JanNRIagHZaK2GJE3cOlHA8R4u4fo4IzBIuWKFOVltNgWt7xwlJMlb78bf9sD9h
 
 RESET ALL;
