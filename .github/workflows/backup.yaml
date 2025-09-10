@@ -58,18 +58,37 @@ jobs:
         if: env.BACKUP_ENABLED == 'true'
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.TIMESTAMP }}/data.sql --data-only --use-copy
 
-      - name: Delete oldest backup if 4 or more exist
+      - name: Cleanup old backups based on folder name timestamp
         run: |
           backup_dir="backups"
-          count=$(find "$backup_dir" -mindepth 1 -maxdepth 1 -type d | wc -l)
+          retention_days=7
+          now=$(date +%s)
 
-          if [ "$count" -ge 4 ]; then
-            oldest=$(ls -1 "$backup_dir" | sort | head -1)
-            echo "Deleting oldest backup folder: $backup_dir/$oldest"
-            rm -rf "$backup_dir/$oldest"
-          else
-            echo "Only $count backups exist, not deleting any."
-          fi
+          for dir in "$backup_dir"/*; do
+            if [ ! -d "$dir" ]; then
+              continue
+            fi
+
+            base=$(basename "$dir")
+            ts="${base//_/ }"
+            ts="${ts//-/ :}"
+            echo "Parsing folder name $base to timestamp: $ts"
+            folder_date=$(date -d "$ts" +%s 2>/dev/null || true)
+
+            if [ -z "$folder_date" ]; then
+              echo "Warning: could not parse date for folder $dir"
+              continue
+            fi
+
+            diff_days=$(( (now - folder_date) / 86400 ))
+
+            if (( diff_days > retention_days )); then
+              echo "Deleting folder $dir (older than $retention_days days)"
+              rm -rf "$dir"
+            else
+              echo "Keeping folder $dir"
+            fi
+          done
 
       - name: Commit backups
         if: env.BACKUP_ENABLED == 'true'
