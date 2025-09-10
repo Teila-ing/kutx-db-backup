@@ -12,4 +12,4 @@ jobs:
 
   call_second_job:
     needs: main_job
-    uses: ./.github/workflows/second_job.yml
+    uses: ./.github/workflows/second_job.yaml
