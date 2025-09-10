@@ -63,3 +63,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Supabase backup
+
+      - name: Nettoyer les backups anciens
+        run: find backups/ -maxdepth 1 -type d -mmin +60 -exec rm -rf {} +
