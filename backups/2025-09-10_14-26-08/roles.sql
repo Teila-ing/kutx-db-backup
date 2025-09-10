@@ -1,5 +1,5 @@
 
-\restrict gG1LUdzNwZa2MPnWLj7EhJoNCuL1PXoQQfPeoj9N4OBT0dbaFCDAkKI0XurbzhW
+\restrict ScrmaynYMPbIF0Q0GopoXyJwffeqZhGkbawELiiY1xTxCq5pHPyCevlgOdr0hcW
 
 SET default_transaction_read_only = off;
 
@@ -12,6 +12,6 @@ ALTER ROLE "authenticated" SET "statement_timeout" TO '8s';
 
 ALTER ROLE "authenticator" SET "statement_timeout" TO '8s';
 
-\unrestrict gG1LUdzNwZa2MPnWLj7EhJoNCuL1PXoQQfPeoj9N4OBT0dbaFCDAkKI0XurbzhW
+\unrestrict ScrmaynYMPbIF0Q0GopoXyJwffeqZhGkbawELiiY1xTxCq5pHPyCevlgOdr0hcW
 
 RESET ALL;
