@@ -1,0 +1,50 @@
+name: backup-cleaning
+
+on:
+  workflow_dispatch:
+
+jobs:
+  clean_backups:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Cleanup old backups based on folder name timestamp
+        run: |
+          backup_dir="backups"
+          retention_days=7
+          now=$(date +%s)
+          shopt -s nullglob
+
+          for dir in "$backup_dir"/*; do
+            if [ ! -d "$dir" ]; then
+              continue
+            fi
+
+            base=$(basename "$dir")
+            ts="${base/_/ }"
+            date_part="${ts%% *}"
+            time_part="${ts#* }"
+            time_part="${time_part//-/:}"
+
+            full_ts="$date_part $time_part"
+            echo "Parsing folder name $base to timestamp: $full_ts"
+            folder_date=$(date -d "$full_ts" +%s 2>/dev/null || true)
+
+            if [ -z "$folder_date" ]; then
+              echo "Warning: could not parse date for folder $dir"
+              continue
+            fi
+
+            diff_days=$(( (now - folder_date) / 86400 ))
+
+            if (( diff_days > retention_days )); then
+              echo "Deleting folder $dir (older than $retention_days days)"
+              rm -rf "$dir"
+            else
+              echo "Keeping folder $dir"
+            fi
+          done
+
+          shopt -u nullglob
