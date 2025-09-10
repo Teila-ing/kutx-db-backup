@@ -63,7 +63,7 @@ jobs:
           echo "remove old backup folders"
           find backups/ -type d -mmin +60 -print -exec rm -rf {} +
           echo "remaining folders"
-          ls -l --time=modify backups/
+          ls -l backups/
 
       - name: Commit backups
         if: env.BACKUP_ENABLED == 'true'
