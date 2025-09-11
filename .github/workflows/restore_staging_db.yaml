@@ -2,13 +2,14 @@ name: supabase-restore
 
 on:
   workflow_call:
-    #secrets:
-    #SUPABASE_DB_URL:
-    #  required: true
+      inputs:
+      supabase_db_url:
+        required: true
+        type: string
   workflow_dispatch: # manuel trigger from github interface
 
 env:
-  SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+  SUPABASE_DB_URL: ${{ inputs.supabase_db_url || secrets.SUPABASE_DB_URL }}
 
 jobs:
   restore_db:

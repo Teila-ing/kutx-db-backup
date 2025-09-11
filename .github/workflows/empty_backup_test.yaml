@@ -1,0 +1,131 @@
+name: supabase-backup-test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # Runs every day at midnight
+
+env:
+  BACKUP_ENABLED: true
+
+jobs:
+  run_db_backup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_ENABLED: ${{ vars.BACKUP_ENABLED }} # Repository variable (true or false)
+    
+    steps:
+      - name: Set TIMESTAMP variable
+        run: echo "TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
+
+      - name: Check if backups are enabled
+        run: |
+          if [ "$BACKUP_ENABLED" != "true" ]; then
+            echo "Backups are disabled. Exiting workflow."
+            exit 0
+          fi
+
+      - name: Checkout repository
+        if: env.BACKUP_ENABLED == 'true'
+        uses: actions/checkout@v5
+
+      - name: Setup Supabase CLI
+        if: env.BACKUP_ENABLED == 'true'
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Create timestamp folder
+        if: env.BACKUP_ENABLED == 'true'
+        run: mkdir -p "backups/$TIMESTAMP"
+
+      - name: Backup roles
+        if: env.BACKUP_ENABLED == 'true'
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.TIMESTAMP }}/roles.sql --role-only
+
+      - name: Backup schema
+        if: env.BACKUP_ENABLED == 'true'
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.TIMESTAMP }}/schema.sql
+
+      - name: Backup data
+        if: env.BACKUP_ENABLED == 'true'
+        run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.TIMESTAMP }}/data.sql --data-only --use-copy
+
+      - name: Cleanup old backups based on folder name timestamp
+        run: |
+          backup_dir="backups"
+          retention_days=7
+          now=$(date +%s)
+          shopt -s nullglob
+
+          for dir in "$backup_dir"/*; do
+            if [ ! -d "$dir" ]; then
+              continue
+            fi
+
+            base=$(basename "$dir")
+            ts="${base/_/ }"
+            date_part="${ts%% *}"
+            time_part="${ts#* }"
+            time_part="${time_part//-/:}"
+
+            full_ts="$date_part $time_part"
+            echo "Parsing folder name $base to timestamp: $full_ts"
+            folder_date=$(date -d "$full_ts" +%s 2>/dev/null || true)
+
+            if [ -z "$folder_date" ]; then
+              echo "Warning: could not parse date for folder $dir"
+              continue
+            fi
+
+            diff_days=$(( (now - folder_date) / 86400 ))
+
+            if (( diff_days > retention_days )); then
+              echo "Deleting folder $dir (older than $retention_days days)"
+              rm -rf "$dir"
+            else
+              echo "Keeping folder $dir"
+            fi
+          done
+
+          shopt -u nullglob
+
+      - name: Commit backups
+        if: env.BACKUP_ENABLED == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Supabase backup
+
+  restore_staging_db:
+   needs: run_db_backup
+   uses: ./.github/workflows/restore_staging_db.yamlname: supabase-backup
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # Runs every day at midnight
+
+env:
+  BACKUP_ENABLED: true
+
+jobs:
+  run_db_backup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_ENABLED: ${{ vars.BACKUP_ENABLED }} # Repository variable (true or false)
+    
+    steps:
+      - name: Set TIMESTAMP variable
+        run: echo "TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
+
+  restore_staging_db:
+   needs: run_db_backup
+   uses: ./.github/workflows/restore_staging_db.yaml
+   with:
+      supabase_db_url: ${{ secrets.SUPABASE_DB_URL }}
