@@ -21,9 +21,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: tmp debug
-        run: echo "$SUPABASE_DB_URL"
-
       - name: Find latest backup directory
         id: find_latest
         run: |
