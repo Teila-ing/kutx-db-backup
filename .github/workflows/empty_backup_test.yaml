@@ -22,8 +22,8 @@ jobs:
         run: echo "TIMESTAMP=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
 
   restore_staging_db:
-   needs: run_db_backup
-   uses: ./.github/workflows/restore_staging_db.yaml
+    needs: run_db_backup
+    uses: ./.github/workflows/restore_staging_db.yaml
   with:
     supabase_db_url: ${{ env.MY_DB_SECRET }}
   env:
