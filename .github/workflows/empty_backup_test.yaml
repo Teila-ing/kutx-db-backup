@@ -25,6 +25,4 @@ jobs:
     needs: run_db_backup
     uses: ./.github/workflows/restore_staging_db.yaml
     with:
-      supabase_db_url: ${{ env.MY_DB_SECRET }}
-    env:
-      MY_DB_SECRET: ${{ secrets.SUPABASE_DB_URL }}
+      supabase_db_url: ${{ secrets.SUPABASE_DB_URL }}
