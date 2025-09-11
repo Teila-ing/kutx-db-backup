@@ -2,9 +2,9 @@ name: supabase-restore
 
 on:
   workflow_call:
-    secrets:
-      supabase_db_url:
-        required: true
+    # secrets:
+    #   supabase_db_url:
+    #     required: true
 
   workflow_dispatch: # manuel trigger from github interface
 
@@ -12,7 +12,8 @@ jobs:
   restore_db:
     runs-on: ubuntu-latest
     env:
-      SUPABASE_DB_URL: ${{ secrets.supabase_db_url || secrets.SUPABASE_DB_URL }}
+      # SUPABASE_DB_URL: ${{ secrets.supabase_db_url || secrets.SUPABASE_DB_URL }}
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
     permissions:
       contents: read
 
