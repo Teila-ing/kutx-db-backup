@@ -20,4 +20,6 @@ on:
         type: string
 jobs:
   script:
-    - echo "Testing job"
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Testing job"
