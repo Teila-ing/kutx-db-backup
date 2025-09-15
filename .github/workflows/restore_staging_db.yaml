@@ -6,38 +6,17 @@ on:
       supabase_staging_db_url:
         required: true
 
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Targeted database'
-        required: true
-        default: 'staging'
-        type: choice
-        options:
-          - stagingDB
-          - productionDB
+  workflow_dispatch: # manuel trigger from github interface
 
 jobs:
   restore_db:
     runs-on: ubuntu-latest
     env:
-      SUPABASE_DB_URL: ${{ inputs.environment == 'productionDB' && (secrets.SUPABASE_STAGING_DB_URL_TEST) || (secrets.supabase_staging_db_url || secrets.SUPABASE_STAGING_DB_URL) }}
+      SUPABASE_DB_URL: ${{ secrets.supabase_staging_db_url || secrets.SUPABASE_STAGING_DB_URL }}
     permissions:
       contents: read
 
     steps:
-      - name: Check prod secret presence
-        if: ${{ inputs.environment == 'productionDB' && !secrets.SUPABASE_PROD_DB_URL }}
-        run: |
-          echo "SUPABASE_PROD_DB_URL is missing, workflow stopped."
-          exit 1
-
-      - name: Check staging secret presence
-        if: ${{ inputs.environment == 'stagingDB' && !secrets.SUPABASE_STAGING_DB_URL }}
-        run: |
-          echo "SUPABASE_STAGING_DB_URL is missing, workflow stopped."
-          exit 1
-
       - name: Checkout repository
         uses: actions/checkout@v5
 
