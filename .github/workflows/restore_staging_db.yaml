@@ -6,13 +6,22 @@ on:
       supabase_staging_db_url:
         required: true
 
-  workflow_dispatch: # manuel trigger from github interface
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Targeted database'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging DB
+          - production DB
 
 jobs:
   restore_db:
     runs-on: ubuntu-latest
     env:
-      SUPABASE_DB_URL: ${{ secrets.supabase_staging_db_url || secrets.SUPABASE_STAGING_DB_URL }}
+      SUPABASE_DB_URL: ${{ inputs.environment == 'staging-DB' && (secrets.supabase_staging_db_url || secrets.SUPABASE_STAGING_DB_URL) || (secrets.SUPABASE_STAGING_DB_URL_TEST) }}
     permissions:
       contents: read
 
