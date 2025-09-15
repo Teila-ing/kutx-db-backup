@@ -1,0 +1,20 @@
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environnement à déployer'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      enableFeatureX:
+        description: 'Activer la fonctionnalité X'
+        required: false
+        type: boolean
+        default: 'false'
+      notes:
+        description: 'Commentaire (optionnel)'
+        required: false
+        type: string
