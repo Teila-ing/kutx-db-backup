@@ -14,14 +14,14 @@ on:
         default: 'staging'
         type: choice
         options:
-          - staging DB
-          - production DB
+          - stagingDB
+          - productionDB
 
 jobs:
   restore_db:
     runs-on: ubuntu-latest
     env:
-      SUPABASE_DB_URL: ${{ inputs.environment == 'staging-DB' && (secrets.supabase_staging_db_url || secrets.SUPABASE_STAGING_DB_URL) || (secrets.SUPABASE_STAGING_DB_URL_TEST) }}
+      SUPABASE_DB_URL: ${{ inputs.environment == 'productionDB' && (secrets.SUPABASE_STAGING_DB_URL_TEST) || (secrets.supabase_staging_db_url || secrets.SUPABASE_STAGING_DB_URL) }}
     permissions:
       contents: read
 
