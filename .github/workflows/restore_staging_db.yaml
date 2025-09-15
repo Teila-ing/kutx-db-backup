@@ -26,6 +26,18 @@ jobs:
       contents: read
 
     steps:
+      - name: Check prod secret presence
+        if: ${{ inputs.environment == 'productionDB' && !secrets.SUPABASE_PROD_DB_URL }}
+        run: |
+          echo "SUPABASE_PROD_DB_URL is missing, workflow stopped."
+          exit 1
+
+      - name: Check staging secret presence
+        if: ${{ inputs.environment == 'stagingDB' && !secrets.SUPABASE_STAGING_DB_URL }}
+        run: |
+          echo "SUPABASE_STAGING_DB_URL is missing, workflow stopped."
+          exit 1
+
       - name: Checkout repository
         uses: actions/checkout@v5
 
