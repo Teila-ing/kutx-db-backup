@@ -1,5 +1,5 @@
 
-\restrict DDpy1T2KelNqPsdxIzd6mljTtQN32LayidAHGw7W2e08JdzycDRp4FtXF18aadI
+\restrict c65Ky1bPbqmyguX64qW5li1XhYSuZo0VJF7oRkL2ghPmJqSlt2AKifyzNvF47Mv
 
 
 SET statement_timeout = 0;
@@ -538,7 +538,7 @@ CREATE TABLE IF NOT EXISTS "public"."sites" (
 ALTER TABLE "public"."sites" OWNER TO "postgres";
 
 
-COMMENT ON TABLE "public"."sites" IS 'Les sites où se situent les bâtiments';
+COMMENT ON TABLE "public"."sites" IS 'Les adresses où se situent les bâtiments';
 
 
 
@@ -1173,7 +1173,9 @@ CREATE POLICY "Users can delete their profile" ON "public"."profils" FOR DELETE 
 
 
 
-CREATE POLICY "Users can delete their project links" ON "public"."projets_utilisateurs" FOR DELETE TO "authenticated" USING (("user_id" = "auth"."uid"()));
+CREATE POLICY "Users can delete their project links" ON "public"."projets_utilisateurs" FOR DELETE TO "authenticated" USING ((EXISTS ( SELECT 1
+   FROM "public"."projets" "p"
+  WHERE (("p"."id" = "projets_utilisateurs"."projet_id") AND ("p"."created_by" = "auth"."uid"())))));
 
 
 
@@ -1684,6 +1686,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT SELECT,INS
 
 
 
-\unrestrict DDpy1T2KelNqPsdxIzd6mljTtQN32LayidAHGw7W2e08JdzycDRp4FtXF18aadI
+\unrestrict c65Ky1bPbqmyguX64qW5li1XhYSuZo0VJF7oRkL2ghPmJqSlt2AKifyzNvF47Mv
 
 RESET ALL;
