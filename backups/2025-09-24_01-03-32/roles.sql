@@ -1,6 +1,4 @@
 
-\restrict CQRiyz6cWVOUsdQ3nMhxUxdAc32zdcPZCvVj6gecnT6Ae862UwvuqWmMRTDz7D7
-
 SET default_transaction_read_only = off;
 
 SET client_encoding = 'UTF8';
@@ -11,7 +9,5 @@ ALTER ROLE "anon" SET "statement_timeout" TO '3s';
 ALTER ROLE "authenticated" SET "statement_timeout" TO '8s';
 
 ALTER ROLE "authenticator" SET "statement_timeout" TO '8s';
-
-\unrestrict CQRiyz6cWVOUsdQ3nMhxUxdAc32zdcPZCvVj6gecnT6Ae862UwvuqWmMRTDz7D7
 
 RESET ALL;
