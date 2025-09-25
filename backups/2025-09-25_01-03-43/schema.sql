@@ -1,5 +1,4 @@
 
-\restrict ItHK0rnbtRESixczJIugSGkpDAROyk8167Qo0WfBEK3dPQpss3UunH7bR96LifM
 
 
 SET statement_timeout = 0;
@@ -1686,6 +1685,5 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT SELECT,INS
 
 
 
-\unrestrict ItHK0rnbtRESixczJIugSGkpDAROyk8167Qo0WfBEK3dPQpss3UunH7bR96LifM
 
 RESET ALL;
