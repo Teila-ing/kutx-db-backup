@@ -34,7 +34,7 @@ jobs:
 
       - name: Setup Supabase CLI
         if: vars.BACKUP_ENABLED == 'true'
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v2
         with:
           version: latest
 
@@ -96,7 +96,7 @@ jobs:
 
       - name: Commit backups
         if: vars.BACKUP_ENABLED == 'true'
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         
         with:
           commit_message: Supabase backup
