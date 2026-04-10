@@ -6,6 +6,7 @@ on:
     - cron: "0 0 * * *" # Runs every day at midnight
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   BACKUP_ENABLED: true
 
 jobs:
@@ -55,6 +56,7 @@ jobs:
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.TIMESTAMP }}/data.sql --data-only --use-copy
 
       - name: Cleanup old backups based on folder name timestamp
+        if: env.BACKUP_ENABLED == 'true'
         run: |
           backup_dir="backups"
           retention_days=7
@@ -96,11 +98,13 @@ jobs:
       - name: Commit backups
         if: env.BACKUP_ENABLED == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
+        
         with:
           commit_message: Supabase backup
 
   restore_staging_db:
     needs: run_db_backup
+    if: needs.run_db_backup.result == 'success' && env.BACKUP_ENABLED == 'true'
     uses: ./.github/workflows/restore_staging_db.yaml
     secrets:
       supabase_staging_db_url: ${{ secrets.SUPABASE_STAGING_DB_URL }}
