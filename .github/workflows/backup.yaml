@@ -16,7 +16,6 @@ jobs:
       contents: write
     env:
       SUPABASE_DB_URL: ${{ secrets.SUPABASE_PROD_DB_URL }}
-      BACKUP_ENABLED: ${{ vars.BACKUP_ENABLED }} # Repository variable (true or false)
     
     steps:
       - name: Set TIMESTAMP variable
@@ -30,33 +29,33 @@ jobs:
           fi
 
       - name: Checkout repository
-        if: env.BACKUP_ENABLED == 'true'
+        if: vars.BACKUP_ENABLED == 'true'
         uses: actions/checkout@v5
 
       - name: Setup Supabase CLI
-        if: env.BACKUP_ENABLED == 'true'
+        if: vars.BACKUP_ENABLED == 'true'
         uses: supabase/setup-cli@v1
         with:
           version: latest
 
       - name: Create timestamp folder
-        if: env.BACKUP_ENABLED == 'true'
+        if: vars.BACKUP_ENABLED == 'true'
         run: mkdir -p "backups/$TIMESTAMP"
 
       - name: Backup roles
-        if: env.BACKUP_ENABLED == 'true'
+        if: vars.BACKUP_ENABLED == 'true'
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.TIMESTAMP }}/roles.sql --role-only
 
       - name: Backup schema
-        if: env.BACKUP_ENABLED == 'true'
+        if: vars.BACKUP_ENABLED == 'true'
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.TIMESTAMP }}/schema.sql
 
       - name: Backup data
-        if: env.BACKUP_ENABLED == 'true'
+        if: vars.BACKUP_ENABLED == 'true'
         run: supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/${{ env.TIMESTAMP }}/data.sql --data-only --use-copy
 
       - name: Cleanup old backups based on folder name timestamp
-        if: env.BACKUP_ENABLED == 'true'
+        if: vars.BACKUP_ENABLED == 'true'
         run: |
           backup_dir="backups"
           retention_days=7
@@ -96,7 +95,7 @@ jobs:
           shopt -u nullglob
 
       - name: Commit backups
-        if: env.BACKUP_ENABLED == 'true'
+        if: vars.BACKUP_ENABLED == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         
         with:
@@ -104,7 +103,7 @@ jobs:
 
   restore_staging_db:
     needs: run_db_backup
-    if: needs.run_db_backup.result == 'success' && env.BACKUP_ENABLED == 'true'
+    if: needs.run_db_backup.result == 'success' && vars.BACKUP_ENABLED == 'true'
     uses: ./.github/workflows/restore_staging_db.yaml
     secrets:
       supabase_staging_db_url: ${{ secrets.SUPABASE_STAGING_DB_URL }}
